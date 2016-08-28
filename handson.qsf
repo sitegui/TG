@@ -268,15 +268,15 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW[8]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW[9]
 set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (VHDL)"
 set_global_assignment -name EDA_OUTPUT_DATA_FORMAT VHDL -section_id eda_simulation
+set_global_assignment -name VHDL_FILE keeloq_test.vhd
+set_global_assignment -name VHDL_FILE keeloq.vhd
 set_global_assignment -name SDC_FILE handson.sdc
 set_global_assignment -name VHDL_FILE pltb/txt_util.vhd
 set_global_assignment -name VHDL_FILE pltb/pltbutils_user_cfg_pkg.vhd
 set_global_assignment -name VHDL_FILE pltb/pltbutils_func_pkg.vhd
 set_global_assignment -name VHDL_FILE pltb/pltbutils_comp_pkg.vhd
 set_global_assignment -name VHDL_FILE pltb/pltbutils_comp.vhd
-set_global_assignment -name SDC_FILE handson.SDC
 set_global_assignment -name VHDL_FILE handson.vhd
-set_global_assignment -name VHDL_FILE keeloq_encrypt.vhd
-set_global_assignment -name VHDL_FILE lfsr.vhd
-set_global_assignment -name VHDL_FILE keeloq_encrypt_test.vhd
+set_global_assignment -name VHDL_INPUT_VERSION VHDL_2008
+set_global_assignment -name VHDL_SHOW_LMF_MAPPING_MESSAGES OFF
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
