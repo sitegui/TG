@@ -3,10 +3,10 @@ use ieee.std_logic_1164.all;
 use work.pltbutils_func_pkg.all;
 use work.pltbutils_comp_pkg.all;
 
-entity keeloq_encrypt_test is
+entity keeloq_test is
 end entity;
 
-architecture rtl of keeloq_encrypt_test is
+architecture rtl of keeloq_test is
 	signal pltbs: pltbs_t := C_PLTBS_INIT;
 	
 	signal key: std_logic_vector(63 downto 0) := (others => '0');
@@ -21,7 +21,7 @@ begin
 		G_PERIOD => 20 ns
 	) port map (
 		clk_o => clk,
-		stop_sim_i => '0'
+		stop_sim_i => pltbs.stop_sim
 	);
 	
 	process
@@ -33,12 +33,10 @@ begin
 		key <= x"ba64de6e980836ed";
 		plaintext <= x"b6b7e517";
 		start_process <= '1';
-		waitclks(1, clk, pltbv, pltbs);
-		wait for 1 ns;
+		waitclks(1, clk, pltbv, pltbs, true);
 		start_process <= '0';
 		check("Not done", done, '0', pltbv, pltbs);
-		waitclks(8, clk, pltbv, pltbs);
-		wait for 1 ns;
+		waitclks(8, clk, pltbv, pltbs, true);
 		check("Done", done, '1', pltbv, pltbs);
 		check("Ciphertext", ciphertext, x"33b8700c", pltbv, pltbs);
 		endtest(pltbv, pltbs);

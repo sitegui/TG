@@ -21,12 +21,10 @@
 *.sof
 *.sopc_builder
 *.summary
-*.tcl
-*.txt # Explicitly add any text files used
 *~
 *example*
 *sopc_*
-# *.sdc # I want those timing files
+*.log
 
 # ignore Quartus II generated folders
 db/
@@ -34,4 +32,3 @@ incremental_db/
 simulation/
 timing/
 testbench/
-*_sim/
