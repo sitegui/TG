@@ -8,13 +8,15 @@ vcom -reportprogress 300 -2008 -work work \
 
 # Compile main application
 vcom -reportprogress 300 -2008 -work work \
-	../../fixedCode.vhd
+	../../fixedCode.vhd \
+	../../PWM_TX.vhd
 
 # Compile test cases
 vcom -reportprogress 300 -2008 -work work \
-	../../test/fixedCode.vhd
+	../../test/fixedCode.vhd \
+	../../test/PWM_TX.vhd
 
-vsim -l ../../test.log fixedCodeTest
+vsim -l ../../test.log PWM_TX_test
 
 add wave -noupdate -divider {Simulation info}
 add wave -noupdate -label {Test number} pltbs.test_num

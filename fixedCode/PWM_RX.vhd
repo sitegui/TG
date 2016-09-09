@@ -11,7 +11,7 @@ use ieee.numeric_std.all;
 -- 4) guard time: 10 lows
 entity PWM_RX is
 	generic (
-		N: positive
+		N: positive := 8
 	);
 	port (
 		rx: in std_logic;
