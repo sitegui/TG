@@ -13,33 +13,36 @@ entity root is
 end;
 
 architecture rtl of root is
-	constant code: std_logic_vector(9 downto 0) := "1110111011";
-	signal tx, authorized: std_logic;
+	constant tx_code: std_logic_vector(9 downto 0) := "1110111011";
+	signal tx_rx, code_ready, authorized: std_logic;
+	signal rx_code: std_logic_vector(9 downto 0);
 begin
 	-- Represent a transmitter
 	peripheral: entity work.PWM_TX
 		generic map (N => 10)
 		port map (
-			data => code,
+			data => tx_code,
 			clk => clock_50,
 			activate => key(0),
-			tx => tx
+			tx => tx_rx
 		);
 	
 	-- Represent a receiver
-	central: entity work.fixedCode
+	centralRX: entity work.PWM_RX
 		generic map (N => 10)
 		port map (
-			code => code,
-			intake => tx,
+			rx => tx_rx,
 			clk => clock_50,
-			authorized => authorized
+			data => rx_code,
+			data_ready => code_ready
 		);
 	
-	process (authorized) is
+	process (code_ready, rx_code) is
 	begin
-		if authorized then
-			ledr(0) <= '1';
+		if code_ready = '1' and rx_code = tx_code then
+			authorized <= '1';
 		end if;
 	end process;
+	
+	ledr(0) <= authorized;
 end architecture;
