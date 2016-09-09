@@ -17,7 +17,7 @@ architecture rtl of root is
 	constant tx_code: std_logic_vector(9 downto 0) := "1110111011";
 	signal tx_rx, code_ready, authorized: std_logic;
 	signal rx_code: std_logic_vector(9 downto 0);
-	signal counter: natural;
+	signal counter: natural := 0;
 begin
 	-- Represent a transmitter
 	peripheral: entity work.PWM_TX
@@ -25,7 +25,7 @@ begin
 		port map (
 			data => tx_code,
 			clk => clock_50,
-			activate => key(0),
+			activate => not key(0),
 			tx => tx_rx
 		);
 	
@@ -50,7 +50,7 @@ begin
 				if rx_code = tx_code then
 					ledr(1) <= '1';
 				end if;
-			elsif counter = 50000 then
+			elsif counter = 50e6 then
 				ledr(0) <= '0';
 				ledr(1) <= '0';
 				counter <= 0;
