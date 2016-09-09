@@ -20,7 +20,7 @@ entity PWM_RX is
 		-- All bits received, from first (0) to last (N-1)
 		data: out std_logic_vector(N-1 downto 0);
 		-- Rise when data is ready to be read and stay high for 1 clock cycle
-		data_ready: out std_logic
+		data_ready: out std_logic := '0'
 	);
 end;
 
@@ -92,19 +92,19 @@ begin
 					state <= payload2;
 					counter <= counter + 1;
 				when payload2 =>
-					if rx = '1' and counter /= N then
-						state <= payload0;
-					else
-						state <= guard;
-						data <= data_copy;
-						data_ready <= '1';
-					end if;
-				when payload0 =>
 					if rx = '1' then
 						-- Error
 						state <= off;
 					else
+						state <= payload0;
+					end if;
+				when payload0 =>
+					if rx = '1' and counter /= N then
 						state <= payload1;
+					else
+						state <= guard;
+						data <= data_copy;
+						data_ready <= '1';
 					end if;
 				when guard =>
 					state <= off;
