@@ -13,7 +13,7 @@ use ieee.numeric_std.all;
 -- 4) guard time: 10 lows
 entity PWM_TX is
 	generic (
-		N: natural
+		N: positive := 8
 	);
 	port (
 		-- All bits to transmit, from LSB (0) to MSB (N-1)
@@ -45,7 +45,7 @@ begin
 			counter <= counter + 1;
 			
 			if state = off then
-				tx <= 'Z';
+				tx <= '0';
 				if activate = '1' then
 					-- Start
 					state <= preamble;
@@ -100,7 +100,7 @@ begin
 				end if;
 			elsif state = guard then
 				-- Guard
-				tx <= 'Z';
+				tx <= '0';
 				
 				if counter = 9 then
 					state <= off;
