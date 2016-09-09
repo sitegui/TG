@@ -2,13 +2,14 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 -- key(0) : send
--- ledr(0) : authorized
+-- ledr(0) : received (holded for 1s)
+-- ledr(1) : passed (holded for 1s)
 
 entity root is
 	port (
 		key: in std_logic_vector(0 downto 0);
 		clock_50: in std_logic;
-		ledr: out std_logic_vector(0 downto 0)
+		ledr: out std_logic_vector(1 downto 0)
 	);
 end;
 
@@ -16,6 +17,7 @@ architecture rtl of root is
 	constant tx_code: std_logic_vector(9 downto 0) := "1110111011";
 	signal tx_rx, code_ready, authorized: std_logic;
 	signal rx_code: std_logic_vector(9 downto 0);
+	signal counter: natural;
 begin
 	-- Represent a transmitter
 	peripheral: entity work.PWM_TX
@@ -37,12 +39,22 @@ begin
 			data_ready => code_ready
 		);
 	
-	process (code_ready, rx_code) is
+	process (all) is
 	begin
-		if code_ready = '1' and rx_code = tx_code then
-			authorized <= '1';
+		if rising_edge(clock_50) then
+			counter <= counter + 1;
+			
+			if code_ready = '1' then
+				ledr(0) <= '1';
+				counter <= 0;
+				if rx_code = tx_code then
+					ledr(1) <= '1';
+				end if;
+			elsif counter = 50000 then
+				ledr(0) <= '0';
+				ledr(1) <= '0';
+				counter <= 0;
+			end if;
 		end if;
 	end process;
-	
-	ledr(0) <= authorized;
 end architecture;
