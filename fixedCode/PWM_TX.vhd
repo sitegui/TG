@@ -46,6 +46,7 @@ begin
 			
 			if state = off then
 				tx <= '0';
+				counter <= counter;
 				if activate = '1' then
 					-- Start
 					state <= preamble;

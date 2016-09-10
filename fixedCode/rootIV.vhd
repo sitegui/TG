@@ -5,7 +5,7 @@ use ieee.std_logic_1164.all;
 -- ledr(0) : received (holded for 1s)
 -- ledr(1) : passed (holded for 1s)
 
-entity rootVI is
+entity rootIV is
 	port (
 		key: in std_logic_vector(0 downto 0);
 		clock_50: in std_logic;
@@ -14,7 +14,7 @@ entity rootVI is
 	);
 end;
 
-architecture rtl of rootVI is
+architecture rtl of rootIV is
 	constant tx_code: std_logic_vector(9 downto 0) := "1110111011";
 	signal tx_rx, code_ready, authorized: std_logic;
 	signal rx_code: std_logic_vector(9 downto 0);
@@ -53,7 +53,7 @@ begin
 				if rx_code = tx_code then
 					ledr(1) <= '1';
 				end if;
-			elsif counter = 50e6 then
+			elsif counter = 10 then
 				ledr(0) <= '0';
 				ledr(1) <= '0';
 				counter <= 0;
