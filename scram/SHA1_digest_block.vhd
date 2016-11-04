@@ -31,7 +31,7 @@ architecture rtl of SHA1_digest_block is
 	signal s_busy: std_logic := '0';
 	signal s_words_queue: t_word_vector(0 to 15);
 	signal s_block: std_logic_vector(511 downto 0);
-	signal s_hash: t_word_vector(0 to 4);
+	signal s_hash_copy, s_hash: t_word_vector(0 to 4);
 begin
 	process (all) is
 		variable Ws, T, a, b, c, d, e, ft, Kt: t_word;
@@ -46,6 +46,7 @@ begin
 				
 				-- Copy bits to words
 				for i in 0 to 4 loop
+					s_hash_copy(i) <= t_word'(unsigned(i_hash((159-32*i) downto (128-32*i))));
 					s_hash(i) <= t_word'(unsigned(i_hash((159-32*i) downto (128-32*i))));
 				end loop;
 			elsif s_busy = '1' then
@@ -63,8 +64,7 @@ begin
 				s_words_queue <= s_words_queue(1 to 15) & Ws;
 				
 				-- Define helper variables
-				v_hash := s_hash;
-				(a, b, c, d, e) := v_hash;
+				(a, b, c, d, e) := s_hash;
 				if s_round < 20 then
 					Kt := t_word'(x"5a827999");
 					ft := (b and c) xor ((not b) and d);
@@ -81,23 +81,23 @@ begin
 				T := (a rol 5) + ft + e + Kt + Ws;
 				
 				-- Apply round
-				v_hash(0) := v_hash(0) + T;
-				v_hash(1) := v_hash(1) + a;
-				v_hash(2) := v_hash(2) + (b rol 30);
-				v_hash(3) := v_hash(3) + c;
-				v_hash(4) := v_hash(4) + d;
+				e := d;
+				d := c;
+				c := b rol 30;
+				b := a;
+				a := T;
+				s_hash <= (a, b, c, d, e);
 			
 				if s_round = 79 then
 					-- Finished
 					s_busy <= '0';
-					o_hash <= std_logic_vector(v_hash(0)) &
-						std_logic_vector(v_hash(1)) &
-						std_logic_vector(v_hash(2)) &
-						std_logic_vector(v_hash(3)) &
-						std_logic_vector(v_hash(4));
+					o_hash <= std_logic_vector(s_hash_copy(0) + a) &
+						std_logic_vector(s_hash_copy(1) + b) &
+						std_logic_vector(s_hash_copy(2) + c) &
+						std_logic_vector(s_hash_copy(3) + d) &
+						std_logic_vector(s_hash_copy(4) + e);
 				else
 					s_round <= s_round + 1;
-					s_hash <= v_hash;
 				end if;
 			end if;
 		end if;
