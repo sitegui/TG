@@ -11,17 +11,22 @@ vcom -reportprogress 300 -2008 -work work \
 	../../SHA1_digest_block.vhd \
 	../../SHA1.vhd \
 	../../SHA1_PRNG.vhd \
-	../../HMAC_SHA1.vhd
+	../../HMAC_SHA1.vhd \
+	../../../PWM/PWM_RX.vhd \
+	../../../PWM/PWM_TX.vhd \
+	../../client.vhd
 
 # Compile test cases
 vcom -reportprogress 300 -2008 -work work \
 	../../test/SHA1_digest_block.vhd \
 	../../test/SHA1.vhd \
 	../../test/SHA1_PRNG.vhd \
-	../../test/HMAC_SHA1.vhd
+	../../test/HMAC_SHA1.vhd \
+	../../test/client.vhd
 
-vsim -l ../../test.log HMAC_SHA1_test
+vsim -l ../../test.log client_test
 
+radix -hexadecimal
 add wave -noupdate -divider {Simulation info}
 add wave -noupdate -label {Test number} pltbs.test_num
 add wave -noupdate -label {Test name} pltbs.test_name
