@@ -38,7 +38,7 @@ architecture rtl of PWM_TX is
 
 	type state_t is (off, preamble, header, payload0, payload1, payload2, guard);
 	signal state: state_t := off;
-	signal counter: natural range 0 to MAX(31, N-1);
+	signal counter: natural range 0 to MAX(32, N);
 	signal data_copy: std_logic_vector(N-1 downto 0);
 begin
 	process (all) is
