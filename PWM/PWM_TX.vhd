@@ -22,7 +22,9 @@ entity PWM_TX is
 		clk: in std_logic;
 		-- When '1', start transmitting
 		activate: in std_logic;
-		tx: out std_logic
+		tx: out std_logic;
+		-- '1' while transmittion is happening
+		busy: out std_logic
 	);
 end;
 
@@ -46,12 +48,14 @@ begin
 			
 			if state = off then
 				tx <= '0';
+				busy <= '0';
 				counter <= counter;
 				if activate = '1' then
 					-- Start
 					state <= preamble;
 					counter <= 0;
 					data_copy <= data;
+					busy <= '1';
 				end if;
 			elsif state = preamble then
 				-- Preamble
