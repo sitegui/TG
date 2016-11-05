@@ -9,8 +9,6 @@ architecture rtl of SHA1_PRNG_test is
 	signal pltbs: pltbs_t := C_PLTBS_INIT;
 	
 	signal i_clk: std_logic;
-	signal i_seed: std_logic_vector(0 to 159);
-	signal i_load_seed: std_logic;
 	signal i_start: std_logic;
 	signal o_random: std_logic_vector(0 to 39);
 	signal o_busy: std_logic := '0';
@@ -21,8 +19,8 @@ architecture rtl of SHA1_PRNG_test is
 begin
 	
 	uut: entity work.SHA1_PRNG
-		generic map (40)
-		port map (i_clk, i_seed, i_load_seed, i_start, o_random, o_busy,
+		generic map (40, x"6e863f898a327b1a9a6b4f69b67df28c20bd3aac")
+		port map (i_clk, i_start, o_random, o_busy,
 			o_sha1_data, o_sha1_start, i_sha1_hash, i_sha1_busy);
 	
 	aux: entity work.SHA1
@@ -40,23 +38,7 @@ begin
 	begin
 		startsim("SHA1 PRNG", "", pltbv, pltbs);
 		
-		-- Test 1: do not generate when not seeded
-		starttest("Require seeding", pltbv, pltbs);
-		i_start <= '1';
-		waitclks(1, i_clk, pltbv, pltbs, true);
-		i_start <= '0';
-		check("Not busy", o_busy, '0', pltbv, pltbs);
-		endtest(pltbv, pltbs);
-		
-		-- Test 2: Seed
-		starttest("Seed", pltbv, pltbs);
-		i_seed <= x"6e863f898a327b1a9a6b4f69b67df28c20bd3aac";
-		i_load_seed <= '1';
-		waitclks(1, i_clk, pltbv, pltbs, true);
-		i_load_seed <= '0';
-		endtest(pltbv, pltbs);
-		
-		-- Test 3: first random number
+		-- First random number
 		starttest("First random", pltbv, pltbs);
 		i_start <= '1';
 		waitclks(1, i_clk, pltbv, pltbs, true);
@@ -66,15 +48,7 @@ begin
 		check("Result", o_random, x"ac8af8d88e", pltbv, pltbs);
 		endtest(pltbv, pltbs);
 		
-		-- Test 4: don't reseed
-		starttest("No reseed", pltbv, pltbs);
-		i_seed <= x"efe1482f39f520eda737b9a03a2ccd4b4f56fd7f";
-		i_load_seed <= '1';
-		waitclks(1, i_clk, pltbv, pltbs, true);
-		i_load_seed <= '0';
-		endtest(pltbv, pltbs);
-		
-		-- Test 5: second random number
+		-- Second random number
 		starttest("Second random", pltbv, pltbs);
 		i_start <= '1';
 		waitclks(1, i_clk, pltbv, pltbs, true);
