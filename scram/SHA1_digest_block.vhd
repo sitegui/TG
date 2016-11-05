@@ -29,23 +29,19 @@ architecture rtl of SHA1_digest_block is
 	type t_word_vector is array (natural range <>) of t_word;
 	signal s_round: integer range 0 to 79 := 0;
 	signal s_words_queue: t_word_vector(0 to 15);
-	signal s_block: std_logic_vector(0 to 511);
-	signal s_hash_copy, s_hash: t_word_vector(0 to 4);
+	signal s_hash: t_word_vector(0 to 4);
 begin
 	process (all) is
 		variable Ws, T, a, b, c, d, e, ft, Kt: t_word;
-		variable v_hash: t_word_vector(0 to 4);
 	begin
 		if rising_edge(i_clk) then
 			if not o_busy and i_start then
 				-- Start process
 				o_busy <= '1';
 				s_round <= 0;
-				s_block <= i_block;
 				
 				-- Copy bits to words
 				for i in 0 to 4 loop
-					s_hash_copy(i) <= t_word'(unsigned(i_hash((32*i) to (31+32*i))));
 					s_hash(i) <= t_word'(unsigned(i_hash((32*i) to (31+32*i))));
 				end loop;
 			elsif o_busy then
@@ -53,7 +49,7 @@ begin
 				
 				-- Word schedule
 				if s_round < 16 then
-					Ws := unsigned(s_block((32*s_round) to (31+32*s_round)));
+					Ws := unsigned(i_block((32*s_round) to (31+32*s_round)));
 				else
 					Ws := (s_words_queue(13) xor
 						s_words_queue(8) xor
@@ -90,11 +86,11 @@ begin
 				if s_round = 79 then
 					-- Finished
 					o_busy <= '0';
-					o_hash <= std_logic_vector(s_hash_copy(0) + a) &
-						std_logic_vector(s_hash_copy(1) + b) &
-						std_logic_vector(s_hash_copy(2) + c) &
-						std_logic_vector(s_hash_copy(3) + d) &
-						std_logic_vector(s_hash_copy(4) + e);
+					o_hash(0 to 31) <= std_logic_vector(unsigned(i_hash(0 to 31)) + a);
+					o_hash(32 to 63) <= std_logic_vector(unsigned(i_hash(32 to 63)) + b);
+					o_hash(64 to 95) <= std_logic_vector(unsigned(i_hash(64 to 95)) + c);
+					o_hash(96 to 127) <= std_logic_vector(unsigned(i_hash(96 to 127)) + d);
+					o_hash(128 to 159) <= std_logic_vector(unsigned(i_hash(128 to 159)) + e);
 				else
 					s_round <= s_round + 1;
 				end if;
