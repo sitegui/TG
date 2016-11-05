@@ -18,6 +18,7 @@ architecture rtl of client_test is
 	signal rx_ready: std_logic;
 	
 	constant SERIAL: std_logic_vector(0 to 31) := x"0fb5f9e9";
+	constant nonce_s: std_logic_vector(0 to 39) := x"23e81fbdde";
 begin
 	
 	uut: entity work.client
@@ -57,6 +58,7 @@ begin
 	
 	process
 		variable pltbv: pltbv_t := C_PLTBV_INIT;
+		variable nonce_c: std_logic_vector(0 to 39);
 	begin
 		startsim("Client", "", pltbv, pltbs);
 		
@@ -75,20 +77,30 @@ begin
 		i_start <= '0';
 		check("Busy", o_busy, '1', pltbv, pltbs);
 		waitsig(rx_ready, '1', i_clk, pltbv, pltbs, true);
+		nonce_c := rx_data(32 to 71);
 		check("Frame: serial", rx_data(0 to 31), SERIAL, pltbv, pltbs);
-		check("Frame: client nonce", rx_data(32 to 71), x"cb575e218d", pltbv, pltbs);
+		check("Frame: client nonce", nonce_c, x"cb575e218d", pltbv, pltbs);
 		check("Frame: data", rx_data(72 to 79), i_data, pltbv, pltbs);
 		check("Frame: zeros", rx_data(80 to 239), (0 to 159 => '0'), pltbv, pltbs);
 		endtest(pltbv, pltbs);
 		
 		-- Server first
 		starttest("Second message", pltbv, pltbs);
+		tx_data <= nonce_c & nonce_s;
+		tx_start <= '1';
+		waitclks(1, i_clk, pltbv, pltbs, true);
+		tx_start <= '0';
+		waitsig(tx_busy, '0', i_clk, pltbv, pltbs, true);
 		endtest(pltbv, pltbs);
 		
 		-- Client last
 		starttest("Third message", pltbv, pltbs);
 		endtest(pltbv, pltbs);
-		
+		waitsig(rx_ready, '1', i_clk, pltbv, pltbs, true);
+		check("Frame: client nonce", rx_data(0 to 39), nonce_c, pltbv, pltbs);
+		check("Frame: server nonce", rx_data(40 to 79), nonce_s, pltbv, pltbs);
+		check("Frame: proof", rx_data(80 to 239), x"ada4287ff6dd229f736d69d10df5f3cbee7af7b3", pltbv, pltbs);
+		waitsig(o_busy, '0', i_clk, pltbv, pltbs, true);
 		endsim(pltbv, pltbs, true);
 		wait;
 	end process;
