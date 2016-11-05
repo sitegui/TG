@@ -2,10 +2,10 @@ library ieee;
 use ieee.std_logic_1164.all;
 use work.pltbutils_func_pkg.all;
 
-entity SHA1_digest_blockTest is
+entity SHA1_digest_block_test is
 end entity;
 
-architecture rtl of SHA1_digest_blockTest is
+architecture rtl of SHA1_digest_block_test is
 	signal pltbs: pltbs_t := C_PLTBS_INIT;
 	
 	signal i_clk: std_logic;

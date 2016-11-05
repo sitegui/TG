@@ -52,19 +52,18 @@ begin
 				sha1_hash_in <= x"67452301efcdab8998badcfe10325476c3d2e1f0";
 				sha1_start <= '1';
 				o_busy <= '1';
-				case i_mode is
-					when '0' =>
-						-- 160 bits
-						sha1_block(0 to 159) <= i_data1;
-						sha1_block(160) <= '1';
-						sha1_block(161 to 447) <= (others => '0');
-						sha1_block(448 to 511) <= std_logic_vector(k_160);
-					when '1' =>
-						-- 512+160 bits
-						sha1_block <= i_data2;
-						last_block <= false;
-				end case;
-			elsif o_busy and not sha1_busy then
+				if i_mode ='0' then
+					-- 160 bits
+					sha1_block(0 to 159) <= i_data1;
+					sha1_block(160) <= '1';
+					sha1_block(161 to 447) <= (others => '0');
+					sha1_block(448 to 511) <= std_logic_vector(k_160);
+				elsif i_mode = '1' then
+					-- 512+160 bits
+					sha1_block <= i_data2;
+					last_block <= false;
+				end if;
+			elsif o_busy and not sha1_start and not sha1_busy then
 				-- Finish or input next block
 				if i_mode = '1' and not last_block then
 					-- 512+160 bits next block
