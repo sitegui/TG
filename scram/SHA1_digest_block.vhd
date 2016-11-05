@@ -11,13 +11,13 @@ entity SHA1_digest_block is
 		-- Each clock cycle corresponds to a round
 		i_clk: in std_logic;
 		-- Previous intermediate hash
-		i_hash: in std_logic_vector(159 downto 0);
+		i_hash: in std_logic_vector(0 to 159);
 		-- Block input
-		i_block: in std_logic_vector(511 downto 0);
-		-- Start processing on rise
+		i_block: in std_logic_vector(0 to 511);
+		-- Start processing when '1'
 		i_start: in std_logic;
 		-- Final hash
-		o_hash: out std_logic_vector(159 downto 0);
+		o_hash: out std_logic_vector(0 to 159);
 		-- Operation done on fall
 		o_busy: out std_logic := '0'
 	);
@@ -28,9 +28,8 @@ architecture rtl of SHA1_digest_block is
 	subtype t_word is unsigned(31 downto 0);
 	type t_word_vector is array (natural range <>) of t_word;
 	signal s_round: integer range 0 to 79 := 0;
-	signal s_busy: std_logic := '0';
 	signal s_words_queue: t_word_vector(0 to 15);
-	signal s_block: std_logic_vector(511 downto 0);
+	signal s_block: std_logic_vector(0 to 511);
 	signal s_hash_copy, s_hash: t_word_vector(0 to 4);
 begin
 	process (all) is
@@ -38,23 +37,23 @@ begin
 		variable v_hash: t_word_vector(0 to 4);
 	begin
 		if rising_edge(i_clk) then
-			if s_busy = '0' and i_start = '1' then
+			if not o_busy and i_start then
 				-- Start process
-				s_busy <= '1';
+				o_busy <= '1';
 				s_round <= 0;
 				s_block <= i_block;
 				
 				-- Copy bits to words
 				for i in 0 to 4 loop
-					s_hash_copy(i) <= t_word'(unsigned(i_hash((159-32*i) downto (128-32*i))));
-					s_hash(i) <= t_word'(unsigned(i_hash((159-32*i) downto (128-32*i))));
+					s_hash_copy(i) <= t_word'(unsigned(i_hash((32*i) to (31+32*i))));
+					s_hash(i) <= t_word'(unsigned(i_hash((32*i) to (31+32*i))));
 				end loop;
-			elsif s_busy = '1' then
+			elsif o_busy then
 				-- Do one of the 80 rounds
 				
 				-- Word schedule
 				if s_round < 16 then
-					Ws := unsigned(s_block((511-32*s_round) downto (480-32*s_round)));
+					Ws := unsigned(s_block((32*s_round) to (31+32*s_round)));
 				else
 					Ws := (s_words_queue(13) xor
 						s_words_queue(8) xor
@@ -90,7 +89,7 @@ begin
 			
 				if s_round = 79 then
 					-- Finished
-					s_busy <= '0';
+					o_busy <= '0';
 					o_hash <= std_logic_vector(s_hash_copy(0) + a) &
 						std_logic_vector(s_hash_copy(1) + b) &
 						std_logic_vector(s_hash_copy(2) + c) &
@@ -102,6 +101,4 @@ begin
 			end if;
 		end if;
 	end process;
-	
-	o_busy <= s_busy;
 end architecture;
