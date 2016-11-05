@@ -9,14 +9,16 @@ vcom -reportprogress 300 -2008 -work work \
 # Compile main application
 vcom -reportprogress 300 -2008 -work work \
 	../../SHA1_digest_block.vhd \
-	../../SHA1.vhd
+	../../SHA1.vhd \
+	../../SHA1_PRNG.vhd
 
 # Compile test cases
 vcom -reportprogress 300 -2008 -work work \
 	../../test/SHA1_digest_block.vhd \
-	../../test/SHA1.vhd
+	../../test/SHA1.vhd \
+	../../test/SHA1_PRNG.vhd
 
-vsim -l ../../test.log SHA1_test
+vsim -l ../../test.log SHA1_PRNG_test
 
 add wave -noupdate -divider {Simulation info}
 add wave -noupdate -label {Test number} pltbs.test_num
