@@ -7,14 +7,14 @@ use ieee.numeric_std.all;
 entity client is
 	generic (
 		-- Client key (must be random)
-		KEY_C: std_logic_vector(0 to 159);
+		KEY_C: std_logic_vector(0 to 159) := x"6b94081aa988d6ebedb673b43ca059d836f5b733";
 		-- Seed for PRNG (must be random)
-		SEED: std_logic_vector(0 to 159);
+		SEED: std_logic_vector(0 to 159) := x"742baecbf8a7578f2035280d48a7db9ece91666a";
 		-- Device serial (must be unique)
-		SERIAL: std_logic_vector(0 to 31);
+		SERIAL: std_logic_vector(0 to 31) := x"390415b9";
 		-- Max number of clock cycles to wait for an answer
 		-- from the server
-		RX_TIMEOUT: natural
+		RX_TIMEOUT: positive := 50000
 	);
 	port (
 		i_clk: in std_logic;
@@ -37,10 +37,10 @@ architecture rtl of client is
 		startup2, -- waiting for hashing KEY_C
 		off, -- waiting for i_start
 		wait_nonce, -- waiting for PRNG
-		tx1, -- transmitting first message (serial | nonce_c | data
-		rx, -- waiting to receive answer. may timeout
+		tx1, -- transmitting client first message (serial | nonce_c | data)
+		rx, -- waiting for server first message. May timeout
 		proof, -- waiting to compute client proof
-		tx2 -- transmitting second message
+		tx2 -- transmitting client last message
 	);
 	signal state: t_state := startup1;
 	signal nonce_s: std_logic_vector(0 to 39);
@@ -131,11 +131,7 @@ begin
 		i_sha1_busy => sha1_busy
 	);
 	-- proof = key_c xor HMAC(H(key_c), serial | nonce_c | nonce_s | data | zeros)
-	hmac_data(0 to 31) <= SERIAL;
-	hmac_data(32 to 71) <= nonce_c;
-	hmac_data(72 to 111) <= rx_data(40 to 79);
-	hmac_data(112 to 119) <= i_data;
-	hmac_data(120 to 159) <= (others => '0');
+	hmac_data <= SERIAL & nonce_c & nonce_s & i_data & (120 to 159 => '0');
 	
 	process (all) is
 	begin
@@ -191,7 +187,7 @@ begin
 				end if;
 			when rx =>
 				-- Wait server answer
-				if rx_timer = 0 then
+				if rx_timer = 1 then
 					-- ERROR: timeout
 					state <= off;
 				elsif rx_ready then
