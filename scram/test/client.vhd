@@ -95,12 +95,13 @@ begin
 		
 		-- Client last
 		starttest("Third message", pltbv, pltbs);
-		endtest(pltbv, pltbs);
 		waitsig(rx_ready, '1', i_clk, pltbv, pltbs, true);
 		check("Frame: client nonce", rx_data(0 to 39), nonce_c, pltbv, pltbs);
 		check("Frame: server nonce", rx_data(40 to 79), nonce_s, pltbv, pltbs);
 		check("Frame: proof", rx_data(80 to 239), x"ada4287ff6dd229f736d69d10df5f3cbee7af7b3", pltbv, pltbs);
 		waitsig(o_busy, '0', i_clk, pltbv, pltbs, true);
+		endtest(pltbv, pltbs);
+		
 		endsim(pltbv, pltbs, true);
 		wait;
 	end process;

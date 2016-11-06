@@ -14,7 +14,8 @@ vcom -reportprogress 300 -2008 -work work \
 	../../HMAC_SHA1.vhd \
 	../../../PWM/PWM_RX.vhd \
 	../../../PWM/PWM_TX.vhd \
-	../../client.vhd
+	../../client.vhd \
+	../../server.vhd
 
 # Compile test cases
 vcom -reportprogress 300 -2008 -work work \
@@ -22,9 +23,10 @@ vcom -reportprogress 300 -2008 -work work \
 	../../test/SHA1.vhd \
 	../../test/SHA1_PRNG.vhd \
 	../../test/HMAC_SHA1.vhd \
-	../../test/client.vhd
+	../../test/client.vhd \
+	../../test/server.vhd
 
-vsim -l ../../test.log client_test
+vsim -l ../../test.log server_test
 
 radix -hexadecimal
 add wave -noupdate -divider {Simulation info}
@@ -37,7 +39,7 @@ add wave -noupdate -label {StopSim} pltbs.stop_sim
 add wave -noupdate -divider DUT
 add wave -noupdate *
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {0 ps} 0}
+WaveRestoreCursors {{Cursor 1} {0 ns} 0}
 configure wave -timelineunits ns
 update
 
