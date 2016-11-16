@@ -15,7 +15,8 @@ vcom -reportprogress 300 -2008 -work work \
 	../../../PWM/PWM_RX.vhd \
 	../../../PWM/PWM_TX.vhd \
 	../../client.vhd \
-	../../server.vhd
+	../../server.vhd \
+	../../root.vhd
 
 # Compile test cases
 vcom -reportprogress 300 -2008 -work work \
@@ -24,9 +25,10 @@ vcom -reportprogress 300 -2008 -work work \
 	../../test/SHA1_PRNG.vhd \
 	../../test/HMAC_SHA1.vhd \
 	../../test/client.vhd \
-	../../test/server.vhd
+	../../test/server.vhd \
+	../../test/root.vhd
 
-vsim -l ../../test.log server_test
+vsim -l ../../test.log root_test
 
 radix -hexadecimal
 add wave -noupdate -divider {Simulation info}
@@ -49,3 +51,4 @@ when {pltbs.stop_sim == '1'} {
 }
 
 run 1 ms
+wave zoom full

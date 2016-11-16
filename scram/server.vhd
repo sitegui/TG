@@ -239,15 +239,17 @@ begin
 			sha1_mode <= '0';
 			sha1_data1 <= hmac_mac xor proof;
 			sha1_start <= key_sha1_start;
+			sha1_data2 <= (others => '0');
 		when prng =>
 			sha1_mode <= '0';
 			sha1_data1 <= prng_sha1_data;
 			sha1_start <= prng_sha1_start;
+			sha1_data2 <= (others => '0');
 		when hmac =>
 			sha1_mode <= '1';
 			sha1_data1 <= hmac_sha1_data1;
-			sha1_data2 <= hmac_sha1_data2;
 			sha1_start <= hmac_sha1_start;
+			sha1_data2 <= hmac_sha1_data2;
 		end case;
 	end process;
 end architecture;
