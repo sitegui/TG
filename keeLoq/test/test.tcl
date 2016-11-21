@@ -8,13 +8,15 @@ vcom -reportprogress 300 -2008 -work work \
 
 # Compile main application
 vcom -reportprogress 300 -2008 -work work \
-	../../keeloq.vhd
+	../../keeloq.vhd \
+	../../crc.vhd
 
 # Compile test cases
 vcom -reportprogress 300 -2008 -work work \
-	../../test/keeloq.vhd
+	../../test/keeloq.vhd \
+	../../test/crc.vhd
 
-vsim -l ../../test.log keeloq_test
+vsim -l ../../test.log crc_test
 
 add wave -noupdate -divider {Simulation info}
 add wave -noupdate -label {Test number} pltbs.test_num
