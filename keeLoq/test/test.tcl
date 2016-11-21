@@ -8,15 +8,19 @@ vcom -reportprogress 300 -2008 -work work \
 
 # Compile main application
 vcom -reportprogress 300 -2008 -work work \
+	../../../PWM/PWM_TX.vhd \
+	../../../PWM/PWM_RX.vhd \
 	../../keeloq.vhd \
-	../../crc.vhd
+	../../crc.vhd \
+	../../client.vhd
 
 # Compile test cases
 vcom -reportprogress 300 -2008 -work work \
 	../../test/keeloq.vhd \
-	../../test/crc.vhd
+	../../test/crc.vhd \
+	../../test/client.vhd
 
-vsim -l ../../test.log crc_test
+vsim -l ../../test.log client_test
 
 add wave -noupdate -divider {Simulation info}
 add wave -noupdate -label {Test number} pltbs.test_num
