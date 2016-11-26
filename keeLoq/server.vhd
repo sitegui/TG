@@ -29,10 +29,10 @@ entity server is
 end;
 
 architecture rtl of server is
-	type t_state is (rx, crc, decrypt, check);
+	type t_state is (rx, crc, decrypt);
 	signal state: t_state := rx;
 	signal target_counter: unsigned(15 downto 0) := INI_CNTR;
-	signal temp_counter: unsigned(15 downto 0);
+	signal temp_counter: unsigned(15 downto 0) := to_unsigned(0, 16);
 
 	-- RX
 	signal rx_data, rx_data_copy: std_logic_vector(68 downto 0);
@@ -123,6 +123,8 @@ begin
 						-- Within reasonable window
 						target_counter <= rx_counter;
 						o_valid <= '1';
+						o_qu <= rx_data_copy(68 downto 67);
+						o_btn <= rx_data_copy(63 downto 60);
 						state <= rx;
 					elsif target_counter < rx_counter and rx_counter <= target_counter + 32768 then
 						-- Require resynchonization

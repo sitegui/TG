@@ -10,7 +10,7 @@ entity client is
 		-- Device serial (must be unique)
 		SERIAL: std_logic_vector(27 downto 0) := x"325e7f3";
 		-- Initial value for counter
-		INI_CNTR: unsigned(15 downto 0) := x"0000"
+		INI_CNTR: unsigned(15 downto 0) := x"0001"
 	);
 	port (
 		i_clk: in std_logic;
