@@ -9,16 +9,18 @@ vcom -reportprogress 300 -2008 -work work \
 # Compile main application
 vcom -reportprogress 300 -2008 -work work \
 	../../fixedCode.vhd \
-	../../PWM_TX.vhd \
-	../../PWM_RX.vhd
+	../../../PWM/PWM_TX.vhd \
+	../../../PWM/PWM_RX.vhd \
+	../../root.vhd
 
 # Compile test cases
 vcom -reportprogress 300 -2008 -work work \
 	../../test/fixedCode.vhd \
 	../../test/PWM_TX.vhd \
-	../../test/PWM_RX.vhd
+	../../test/PWM_RX.vhd \
+	../../test/root.vhd
 
-vsim -l ../../test.log PWM_RX_test
+vsim -l ../../test.log root_test
 
 add wave -noupdate -divider {Simulation info}
 add wave -noupdate -label {Test number} pltbs.test_num
@@ -31,7 +33,7 @@ add wave -noupdate -divider DUT
 add wave -noupdate *
 TreeUpdate [SetDefaultTree]
 WaveRestoreCursors {{Cursor 1} {0 ps} 0}
-configure wave -timelineunits ns
+configure wave -timelineunits us
 update
 
 when {pltbs.stop_sim == '1'} {
